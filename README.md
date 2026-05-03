@@ -1,6 +1,6 @@
 # CI/CD Pipeline — GitHub Actions
 
-A senior-level CI/CD pipeline built with GitHub Actions, demonstrating a production-grade workflow for a containerised Node.js application deployed to AWS ECS.
+A production-grade CI/CD pipeline built with GitHub Actions
 
 ## Pipeline Overview
 Push/PR → Test → Security Scan → Build & Push → Deploy to ECS
