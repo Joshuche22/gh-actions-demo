@@ -1,8 +1,16 @@
 {
   "name": "gh-actions-demo",
   "version": "1.0.0",
+  "description": "Production-grade Node.js service with health checks, metrics and CI/CD pipeline",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "echo 'Tests passed!' && exit 0"
+    "test": "jest --coverage",
+    "lint": "eslint app.js"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "supertest": "^6.0.0",
+    "eslint": "^8.0.0"
   }
 }
