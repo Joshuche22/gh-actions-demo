@@ -1,66 +1,80 @@
 # CI/CD Pipeline — GitHub Actions
 
-A production-grade CI/CD pipeline built with GitHub Actions
+A production-grade CI/CD pipeline built with GitHub Actions, demonstrating an automated workflow for a containerised Node.js application.
 
 ## Pipeline Overview
-Push/PR → Test → Security Scan → Build & Push → Deploy to ECS
-↓
-Terraform Plan (PRs only)
-↓
-Slack notification on failure
+Push/PR → Test → Security Scan → Build & Push to Docker Hub → Deploy
 
 ## Pipeline Jobs
 
 | Job | Trigger | Purpose |
 |-----|---------|---------|
-| Test | Push + PR | Runs Node.js tests and linting |
-| Security Scan | After test | Trivy scans image for CRITICAL/HIGH CVEs |
-| Build and Push | Main branch only | Builds Docker image and pushes to Amazon ECR |
-| Terraform Plan | PRs only | Runs terraform plan and posts output as PR comment |
-| Deploy to ECS | Main branch only | Updates ECS task definition and deploys |
-| Notify | On failure | Sends Slack alert with branch, commit and author |
+| Test | Push + PR | Runs Node.js unit tests with Jest and linting with ESLint |
+| Security Scan | After test | Trivy scans the Docker image for CRITICAL/HIGH CVEs |
+| Build and Push | Main branch only | Builds Docker image and pushes to Docker Hub |
+| Terraform Plan | PRs only | Runs terraform validate against ECS infrastructure |
+| Deploy | Main branch only | Confirms deployed image tag and deployment details |
 
 ## Key Features
 
 ### Trivy security scanning
-Every image is scanned for vulnerabilities before it reaches the registry. The pipeline fails on CRITICAL or HIGH severity findings, preventing vulnerable images from being deployed.
+Every image is scanned for vulnerabilities before it reaches the registry. The pipeline reports CRITICAL and HIGH severity findings without blocking the build — giving full visibility of any vulnerabilities in the base image.
 
-### Terraform plan on PRs
-When a pull request is opened, the pipeline automatically runs `terraform plan` and posts the output as a PR comment. Engineers can review infrastructure changes alongside code changes before merging.
+### Real Jest test suite
+Five test suites cover every application endpoint — verifying status codes, response shapes, and content types. Coverage reporting is enabled on every run.
 
-### ECR instead of public registry
-Images are pushed to Amazon ECR — a private, encrypted registry — rather than a public Docker Hub repository. Access is controlled via IAM.
+### Docker Hub image registry
+Images are built and pushed to Docker Hub with two tags — latest and the commit SHA. The SHA tag ensures every deployment is traceable back to an exact commit.
 
-### Docker layer caching
-GitHub Actions cache is used to speed up Docker builds. Only changed layers are rebuilt, reducing build times significantly on repeated runs.
+### Terraform validation on PRs
+When a pull request is opened, the pipeline initialises and validates the Terraform configuration in the terraform/ directory — catching infrastructure errors before they reach main.
 
-### ECS rolling deployment
-The pipeline updates the ECS task definition with the new image tag and waits for service stability before marking the deployment as successful. If the service fails to stabilise, the pipeline fails and triggers a Slack alert.
+### Production-ready Node.js application
+The application exposes four endpoints following production service contracts:
 
-### Environment protection
-The deploy job uses a GitHub Actions environment called `dev` — this allows environment-specific secrets and optional manual approval gates before deployment.
+| Endpoint | Purpose |
+|----------|---------|
+| GET / | Returns service name and version |
+| GET /health | Health check — used by load balancers |
+| GET /ready | Readiness check — signals service is ready for traffic |
+| GET /metrics | Prometheus-format metrics |
+
+### Hardened Dockerfile
+- node:18-alpine base image — minimal attack surface
+- Non-root user — container runs as appuser not root
+- HEALTHCHECK instruction — orchestrator-native health monitoring
+- Production-only dependencies — dev tools excluded from image
 
 ## Tech Stack
 
 - Node.js 18
+- Jest + Supertest
 - Docker
-- Amazon ECR
-- Amazon ECS
+- Docker Hub
 - Terraform >= 1.5.0
 - GitHub Actions
 - Trivy (Aqua Security)
-- Slack
+- ESLint
 
 ## Secrets Required
 
 | Secret | Purpose |
 |--------|---------|
-| `AWS_ACCESS_KEY_ID` | AWS authentication |
-| `AWS_SECRET_ACCESS_KEY` | AWS authentication |
-| `DOCKERHUB_USERNAME` | Docker Hub fallback |
-| `DOCKERHUB_TOKEN` | Docker Hub fallback |
-| `SLACK_WEBHOOK_URL` | Failure notifications |
-> **Note:** The Test and Security Scan stages run without AWS credentials. The Build, Push, Deploy and Notify stages require valid AWS credentials and a Slack webhook to pass end-to-end.
+| `DOCKERHUB_USERNAME` | Docker Hub authentication |
+| `DOCKERHUB_TOKEN` | Docker Hub authentication |
+
+## Project Structure
+gh-actions-demo/
+├── .github/workflows/ci-cd.yml  # Pipeline definition
+├── terraform/                    # ECS infrastructure
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+├── app.js                        # Node.js service
+├── app.test.js                   # Jest test suite
+├── Dockerfile                    # Hardened container image
+└── package.json
+
 ## Author
 
 Benedict Korie — [LinkedIn](https://linkedin.com/in/benedict-chijindu-korie-4b29a837b) · [GitHub](https://github.com/Joshuche22)
