@@ -60,7 +60,7 @@ The deploy job uses a GitHub Actions environment called `dev` — this allows en
 | `DOCKERHUB_USERNAME` | Docker Hub fallback |
 | `DOCKERHUB_TOKEN` | Docker Hub fallback |
 | `SLACK_WEBHOOK_URL` | Failure notifications |
-
+> **Note:** The Test and Security Scan stages run without AWS credentials. The Build, Push, Deploy and Notify stages require valid AWS credentials and a Slack webhook to pass end-to-end.
 ## Author
 
 Benedict Korie — [LinkedIn](https://linkedin.com/in/benedict-chijindu-korie-4b29a837b) · [GitHub](https://github.com/Joshuche22)
