@@ -156,7 +156,7 @@ jobs:
     needs: build-and-push
     if: github.ref == 'refs/heads/main'
     
-    continue-on-error: truegit 
+    continue-on-error: true 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
