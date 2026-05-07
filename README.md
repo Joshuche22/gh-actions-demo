@@ -78,3 +78,13 @@ gh-actions-demo/
 ## Author
 
 Benedict Korie — [LinkedIn](https://linkedin.com/in/benedict-chijindu-korie-4b29a837b) · [GitHub](https://github.com/Joshuche22)
+## Git Workflow
+
+This repository follows a trunk-based development workflow with branch protection enforced on `main`.
+
+- All changes are developed on feature branches (`feature/<description>`)
+- A pull request is raised and must be reviewed and approved before merging
+- Direct pushes to `main` are blocked by branch protection rules
+- Commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/) standard (`feat:`, `fix:`, `docs:`, `chore:`)
+
+This mirrors the workflow used in professional engineering teams.
