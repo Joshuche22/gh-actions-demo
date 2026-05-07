@@ -64,6 +64,7 @@ The application exposes four endpoints following production service contracts:
 | `DOCKERHUB_TOKEN` | Docker Hub authentication |
 
 ## Project Structure
+```
 gh-actions-demo/
 ├── .github/workflows/ci-cd.yml  # Pipeline definition
 ├── terraform/                    # ECS infrastructure
@@ -74,6 +75,7 @@ gh-actions-demo/
 ├── app.test.js                   # Jest test suite
 ├── Dockerfile                    # Hardened container image
 └── package.json
+```
 
 ## Author
 
